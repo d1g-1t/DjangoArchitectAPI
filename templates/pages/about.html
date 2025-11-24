@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+  <div class="row">
+    <div class="col-lg-8 mx-auto">
+      <h1 class="mb-4">О проекте</h1>
+      <div class="lead">
+        <p><strong>DjangoArchitectAPI</strong> — это профессиональная демонстрация архитектуры Django REST API корпоративного уровня с оптимизациями и best practices.</p>
+      </div>
+      
+      <hr class="my-4">
+      
+      <h2>Технологический стек</h2>
+      <ul class="list-group list-group-flush mb-4">
+        <li class="list-group-item"><strong>Backend:</strong> Django 4.2, Python 3.11</li>
+        <li class="list-group-item"><strong>Database:</strong> PostgreSQL 15</li>
+        <li class="list-group-item"><strong>Cache:</strong> Redis 7</li>
+        <li class="list-group-item"><strong>Deployment:</strong> Docker, Docker Compose</li>
+        <li class="list-group-item"><strong>Server:</strong> Gunicorn</li>
+      </ul>
+      
+      <h2>Основные возможности</h2>
+      <ul class="mb-4">
+        <li>Публикация и управление постами</li>
+        <li>Категоризация контента</li>
+        <li>Географические метки (локации)</li>
+        <li>Отложенная публикация</li>
+        <li>Оптимизированные запросы к БД</li>
+        <li>Кэширование для высокой производительности</li>
+        <li>Пагинация</li>
+        <li>Адаптивный дизайн</li>
+      </ul>
+      
+      <h2>Архитектура</h2>
+      <p>Проект демонстрирует применение best practices:</p>
+      <ul>
+        <li>Class-Based Views (CBV) для чистой архитектуры</li>
+        <li>Custom Model Managers для оптимизации запросов</li>
+        <li>Select/Prefetch Related для предотвращения N+1 проблемы</li>
+        <li>Redis для кэширования и сессий</li>
+        <li>Database Indexes для производительности</li>
+        <li>Разделение настроек на dev/prod окружения</li>
+        <li>Докеризация всего стека</li>
+      </ul>
+      
+      <div class="alert alert-info mt-4">
+        <p class="mb-0"><strong>Цель проекта:</strong> Демонстрация профессиональных навыков в разработке на Django и готовность к production-окружению.</p>
+      </div>
+    </div>
+  </div>
+{% endblock %}

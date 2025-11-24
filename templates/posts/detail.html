@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+  <article class="mb-5">
+    <h1 class="mb-3">{{ post.title }}</h1>
+    <div class="text-muted mb-4">
+      <small>
+        {% if post.author %}
+          Автор: <strong>{{ post.author.username }}</strong>
+        {% endif %}
+        {% if post.pub_date %}
+          &bull; <time datetime="{{ post.pub_date|date:'c' }}">{{ post.pub_date|date:"d E Y, H:i" }}</time>
+        {% endif %}
+        {% if post.location %}
+          &bull; <span>📍 {{ post.location }}</span>
+        {% endif %}
+        {% if post.category %}
+          &bull; <a href="{% url 'posts:category_posts' post.category.slug %}" class="badge bg-primary text-decoration-none">{{ post.category.title }}</a>
+        {% endif %}
+      </small>
+    </div>
+    
+    {% if post.image %}
+      <div class="mb-4">
+        <img src="{{ post.image.url }}" alt="{{ post.title }}" class="img-fluid rounded">
+      </div>
+    {% endif %}
+    
+    <div class="post-content">
+      {{ post.text|linebreaksbr }}
+    </div>
+  </article>
+  
+  <div class="mt-4">
+    <a href="{% url 'posts:index' %}" class="btn btn-primary">← Вернуться к списку</a>
+    {% if post.category %}
+      <a href="{% url 'posts:category_posts' post.category.slug %}" class="btn btn-outline-secondary">Другие посты в категории "{{ post.category.title }}"</a>
+    {% endif %}
+  </div>
+{% endblock %}

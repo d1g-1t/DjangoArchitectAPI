@@ -1,0 +1,116 @@
+[
+  {
+    "model": "auth.user",
+    "pk": 1,
+    "fields": {
+      "username": "admin",
+      "password": "pbkdf2_sha256$600000$w8kxvZGhE6hx7cXqLz5Qka$oPMhB7xwVYqP6c9WFqVRB8nLU9HpzQtLm3WkMXqMN8M=",
+      "is_superuser": true,
+      "is_staff": true,
+      "is_active": true,
+      "email": "admin@djangoarchitectapi.dev"
+    }
+  },
+  {
+    "model": "apps.posts.category",
+    "pk": 1,
+    "fields": {
+      "title": "Путешествия",
+      "description": "Заметки о поездках и приключениях по миру",
+      "slug": "travel",
+      "is_published": true
+    }
+  },
+  {
+    "model": "apps.posts.category",
+    "pk": 2,
+    "fields": {
+      "title": "Личное",
+      "description": "Размышления о жизни и повседневных событиях",
+      "slug": "personal",
+      "is_published": true
+    }
+  },
+  {
+    "model": "apps.posts.category",
+    "pk": 3,
+    "fields": {
+      "title": "Технологии",
+      "description": "Статьи о новых технологиях и разработке",
+      "slug": "tech",
+      "is_published": true
+    }
+  },
+  {
+    "model": "apps.posts.location",
+    "pk": 1,
+    "fields": {
+      "name": "Остров Отчаяния",
+      "is_published": true
+    }
+  },
+  {
+    "model": "apps.posts.location",
+    "pk": 2,
+    "fields": {
+      "name": "Москва",
+      "is_published": true
+    }
+  },
+  {
+    "model": "apps.posts.post",
+    "pk": 1,
+    "fields": {
+      "title": "Крушение корабля",
+      "slug": "krushenie-korablia",
+      "text": "Наш корабль, застигнутый в открытом море страшным штормом, потерпел крушение. Весь экипаж, кроме меня, утонул; я же, несчастный Робинзон Крузо, был выброшен полумёртвым на берег этого проклятого острова, который назвал островом Отчаяния.",
+      "pub_date": "2024-09-30T12:00:00Z",
+      "author": 1,
+      "category": 1,
+      "location": 1,
+      "is_published": true
+    }
+  },
+  {
+    "model": "apps.posts.post",
+    "pk": 2,
+    "fields": {
+      "title": "Надежда на спасение",
+      "slug": "nadezhda-na-spasenie",
+      "text": "Проснувшись поутру, я увидел, что наш корабль сняло с мели приливом и пригнало гораздо ближе к берегу. Это подало мне надежду, что, когда ветер стихнет, мне удастся добраться до корабля и запастись едой и другими необходимыми вещами. Я немного приободрился, хотя печаль о погибших товарищах не покидала меня.",
+      "pub_date": "2024-10-01T12:00:00Z",
+      "author": 1,
+      "category": 2,
+      "location": 1,
+      "is_published": true
+    }
+  },
+  {
+    "model": "apps.posts.post",
+    "pk": 3,
+    "fields": {
+      "title": "Шторм разрушил надежды",
+      "slug": "shtorm-razrushil-nadezhdy",
+      "text": "Всю ночь и весь день шёл дождь и дул сильный порывистый ветер. Корабль за ночь разбило в щепки; на том месте, где он стоял, торчат какие-то жалкие обломки, да и те видны только во время отлива. Весь этот день я хлопотал около вещей: укрывал и укутывал их, чтобы не испортились от дождя.",
+      "pub_date": "2024-10-25T12:00:00Z",
+      "author": 1,
+      "category": 2,
+      "location": 1,
+      "is_published": true
+    }
+  },
+  {
+    "model": "apps.posts.post",
+    "pk": 4,
+    "fields": {
+      "title": "Введение в Django Best Practices",
+      "slug": "vvedenie-v-django-best-practices",
+      "text": "Django — это мощный фреймворк для веб-разработки на Python. В этой статье я поделюсь лучшими практиками, которые помогут вам писать чистый, поддерживаемый и производительный код. Использование CBV, оптимизация запросов, кэширование — всё это критически важно для создания масштабируемых приложений.",
+      "pub_date": "2024-11-20T15:30:00Z",
+      "author": 1,
+      "category": 3,
+      "location": 2,
+      "is_published": true
+    }
+  }
+]

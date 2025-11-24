@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+  <h1>Последние обновления на сайте</h1>
+  {% for post in posts %}
+    <article class="mb-4">
+      <h2><a href="{% url 'posts:post_detail' post.slug %}" class="text-decoration-none">{{ post.title }}</a></h2>
+      <div class="text-muted mb-2">
+        <small>
+          {% if post.pub_date %}
+            <time datetime="{{ post.pub_date|date:'c' }}">{{ post.pub_date|date:"d E Y" }}</time>
+          {% endif %}
+          {% if post.location %}
+            &bull; <span>{{ post.location }}</span>
+          {% endif %}
+          {% if post.category %}
+            &bull; <a href="{% url 'posts:category_posts' post.category.slug %}">{{ post.category.title }}</a>
+          {% endif %}
+        </small>
+      </div>
+      <div class="post-preview">
+        {{ post.text|truncatewords:50|linebreaksbr }}
+      </div>
+      <a href="{% url 'posts:post_detail' post.slug %}" class="btn btn-sm btn-outline-primary mt-2">Читать далее →</a>
+    </article>
+    <hr>
+  {% empty %}
+    <p class="text-muted">Публикаций пока нет.</p>
+  {% endfor %}
+  
+  {% if is_paginated %}
+  <nav aria-label="Pagination" class="mt-4">
+    <ul class="pagination justify-content-center">
+      {% if page_obj.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?page=1">Первая</a>
+        </li>
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Предыдущая</a>
+        </li>
+      {% endif %}
+      
+      <li class="page-item active">
+        <span class="page-link">
+          Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+        </span>
+      </li>
+      
+      {% if page_obj.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.next_page_number }}">Следующая</a>
+        </li>
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Последняя</a>
+        </li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
+{% endblock %}
