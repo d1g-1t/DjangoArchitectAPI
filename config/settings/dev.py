@@ -6,25 +6,22 @@ Development settings for DjangoArchitectAPI.
 
 from .base import *
 
-# Development mode
 DEBUG = True
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
 
-# Development apps
-INSTALLED_APPS += [
-    'django_extensions',
-    'debug_toolbar',
-]
+try:
+    import django_extensions
+    INSTALLED_APPS += ['django_extensions']
+except ImportError:
+    pass
 
-# Development middleware
-MIDDLEWARE += [
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
-]
-
-# Debug Toolbar settings
-INTERNAL_IPS = [
-    '127.0.0.1',
-]
+try:
+    import debug_toolbar
+    INSTALLED_APPS += ['debug_toolbar']
+    MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
+    INTERNAL_IPS = ['127.0.0.1']
+except ImportError:
+    pass
 
 # Database - для разработки можно использовать SQLite
 if config('USE_SQLITE', default=False, cast=bool):
@@ -35,10 +32,8 @@ if config('USE_SQLITE', default=False, cast=bool):
         }
     }
 
-# Email backend для разработки
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-# Cache - можно отключить для разработки
 if config('DISABLE_CACHE', default=False, cast=bool):
     CACHES = {
         'default': {
@@ -46,9 +41,9 @@ if config('DISABLE_CACHE', default=False, cast=bool):
         }
     }
 
-# Logging level для разработки
-LOGGING['root']['level'] = 'DEBUG'
-LOGGING['loggers']['django.db.backends']['level'] = 'DEBUG'
+LOGGING['root']['level'] = 'INFO'
+if config('DEBUG_SQL', default=False, cast=bool):
+    LOGGING['loggers']['django.db.backends']['level'] = 'DEBUG'
 
 # Shell Plus configuration
 SHELL_PLUS = "ipython"

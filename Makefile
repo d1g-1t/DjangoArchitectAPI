@@ -1,9 +1,9 @@
 .PHONY: help setup build up down restart logs shell migrate makemigrations createsuperuser test clean
 
-# Цвета для вывода
 BLUE := \033[0;34m
 GREEN := \033[0;32m
-NC := \033[0m # No Color
+RED := \033[0;31m
+NC := \033[0m
 
 help: ## Показать эту справку
 	@echo "${BLUE}DjangoArchitectAPI - Доступные команды:${NC}"
@@ -11,21 +11,47 @@ help: ## Показать эту справку
 
 setup: ## 🚀 Полная установка и запуск проекта (одна команда!)
 	@echo "${BLUE}🚀 Запускаем DjangoArchitectAPI...${NC}"
-	@echo "${BLUE}⏳ Проверяем занятые порты...${NC}"
+	@echo "${BLUE}⏳ Останавливаем старые контейнеры...${NC}"
 	@docker-compose down 2>/dev/null || true
-	@cp -n .env.example .env 2>/dev/null || true
-	@echo "${GREEN}✓${NC} Файл .env создан"
-	@docker-compose build --quiet
+	@if [ ! -f .env ]; then cp .env.example .env; echo "${GREEN}✓${NC} Файл .env создан"; else echo "${GREEN}✓${NC} Файл .env уже существует"; fi
+	@echo "${BLUE}⏳ Собираем Docker образы...${NC}"
+	@docker-compose build || { echo "${RED}✗${NC} Ошибка сборки образов"; exit 1; }
 	@echo "${GREEN}✓${NC} Docker образы собраны"
-	@echo "${BLUE}⏳ Запускаем PostgreSQL и Redis...${NC}"
-	@docker-compose up -d db redis
-	@echo "${BLUE}⏳ Ждем запуска баз данных (15 сек)...${NC}"
-	@sleep 15
-	@echo "${BLUE}⏳ Запускаем веб-сервер...${NC}"
-	@docker-compose up -d web
+	@echo "${BLUE}⏳ Запускаем все сервисы (PostgreSQL, Redis, Web)...${NC}"
+	@docker-compose up -d || { \
+		echo "${RED}✗${NC} Ошибка запуска сервисов"; \
+		echo "${BLUE}ℹ${NC}  Проверяем логи..."; \
+		docker-compose logs; \
+		exit 1; \
+	}
+	@echo "${GREEN}✓${NC} Сервисы запущены"
+	@echo "${BLUE}⏳ Ждем готовности PostgreSQL...${NC}"
+	@for i in 1 2 3 4 5 6 7 8 9 10; do \
+		if docker-compose exec -T db pg_isready -U djangoarchitectapi_user -d djangoarchitectapi >/dev/null 2>&1; then \
+			echo "${GREEN}✓${NC} PostgreSQL готов (попытка $$i)"; \
+			break; \
+		fi; \
+		if [ $$i -eq 10 ]; then \
+			echo "${RED}✗${NC} PostgreSQL не запустился после 10 попыток"; \
+			echo "${BLUE}ℹ${NC}  Логи PostgreSQL:"; \
+			docker-compose logs db; \
+			exit 1; \
+		fi; \
+		sleep 3; \
+	done
+	@echo "${BLUE}⏳ Ждем готовности веб-сервера...${NC}"
 	@sleep 5
 	@echo "${BLUE}⏳ Применяем миграции...${NC}"
-	@docker-compose exec -T web python manage.py migrate --noinput
+	@docker-compose exec -T web python manage.py migrate --noinput || { \
+		echo "${RED}✗${NC} Ошибка миграций"; \
+		echo "${BLUE}ℹ${NC}  Логи веб-сервера:"; \
+		docker-compose logs web; \
+		exit 1; \
+	}
+	@echo "${GREEN}✓${NC} Миграции применены"
+	@echo "${BLUE}⏳ Собираем статику...${NC}"
+	@docker-compose exec -T web python manage.py collectstatic --noinput || true
+	@echo "${GREEN}✓${NC} Статика собрана"
 	@echo "${BLUE}⏳ Загружаем начальные данные...${NC}"
 	@docker-compose exec -T web python manage.py loaddata initial_data 2>/dev/null || echo "${BLUE}ℹ${NC}  Фикстуры не загружены (возможно, уже существуют)"
 	@echo ""
