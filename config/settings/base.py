@@ -1,34 +1,21 @@
-"""
-Base settings for DjangoArchitectAPI project.
-
-Содержит общие настройки для всех окружений.
-"""
-
 from pathlib import Path
 from decouple import config
 
-# Build paths
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-# Security
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-dev-key-change-in-production')
 DEBUG = config('DEBUG', default=False, cast=bool)
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',')
 
-# Application definition
 INSTALLED_APPS = [
-    # Django apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
-    # Third-party apps
     'rest_framework',
-    
-    # Local apps
+
     'apps.posts.apps.PostsConfig',
     'apps.pages.apps.PagesConfig',
 ]
@@ -45,7 +32,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'config.urls'
 
-# Templates
 TEMPLATES_DIR = BASE_DIR / 'templates'
 
 TEMPLATES = [
@@ -66,7 +52,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# Database
 DATABASES = {
     'default': {
         'ENGINE': config('DB_ENGINE', default='django.db.backends.sqlite3'),
@@ -75,14 +60,13 @@ DATABASES = {
         'PASSWORD': config('DB_PASSWORD', default=''),
         'HOST': config('DB_HOST', default=''),
         'PORT': config('DB_PORT', default=''),
-        'CONN_MAX_AGE': 600,  # Connection pooling
+        'CONN_MAX_AGE': 600,
         'OPTIONS': {
             'connect_timeout': 10,
         }
     }
 }
 
-# Cache configuration
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
@@ -95,15 +79,13 @@ CACHES = {
             'CONNECTION_POOL_KWARGS': {'max_connections': 50}
         },
         'KEY_PREFIX': 'djangoarchitectapi',
-        'TIMEOUT': 300,  # 5 minutes default
+        'TIMEOUT': 300,
     }
 }
 
-# Session configuration
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 SESSION_CACHE_ALIAS = 'default'
 
-# Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -119,31 +101,39 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Internationalization
 LANGUAGE_CODE = config('LANGUAGE_CODE', default='ru-ru')
 TIME_ZONE = config('TIME_ZONE', default='Europe/Moscow')
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
-
-# Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
-
-# Media files
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Pagination
 POSTS_PER_PAGE = config('POSTS_PER_PAGE', default=10, cast=int)
 
-# REST Framework
+DATA_UPLOAD_MAX_MEMORY_SIZE = config(
+    'DATA_UPLOAD_MAX_MEMORY_SIZE', default=5 * 1024 * 1024, cast=int
+)
+
+DATA_UPLOAD_MAX_NUMBER_FIELDS = config(
+    'DATA_UPLOAD_MAX_NUMBER_FIELDS', default=100, cast=int
+)
+
+DATA_UPLOAD_MAX_NUMBER_FILES = config(
+    'DATA_UPLOAD_MAX_NUMBER_FILES', default=10, cast=int
+)
+
+FILE_UPLOAD_MAX_MEMORY_SIZE = config(
+    'FILE_UPLOAD_MAX_MEMORY_SIZE', default=5 * 1024 * 1024, cast=int
+)
+
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': POSTS_PER_PAGE,
@@ -152,7 +142,6 @@ REST_FRAMEWORK = {
     ],
 }
 
-# Logging
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
