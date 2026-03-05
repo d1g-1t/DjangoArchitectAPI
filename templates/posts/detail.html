@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load post_extras %}
 {% block title %}{{ title }}{% endblock %}
 {% block content %}
   <article class="mb-5">
@@ -27,7 +28,7 @@
     {% endif %}
     
     <div class="post-content">
-      {{ post.text|linebreaksbr }}
+      {{ post.safe_text|safe_linebreaksbr }}
     </div>
   </article>
   
