@@ -1,20 +1,9 @@
-# Core Django
-Django==4.2.7
+Django==4.2.20
 python-decouple==3.8
-
-# Database
 psycopg2-binary==2.9.9
-
-# Performance & Caching
 django-redis==5.4.0
 redis==5.0.1
-
-# API & Serialization
 djangorestframework==3.14.0
-
-# Production Server
 gunicorn==21.2.0
-
-# Utils
 python-slugify==8.0.1
 Pillow==10.1.0
