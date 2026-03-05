@@ -18,6 +18,21 @@ from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
 from django.utils import timezone
+from django.core.validators import MaxLengthValidator
+
+
+# ---------------------------------------------------------------------------
+# Hard limits for text fields
+# ---------------------------------------------------------------------------
+# Maximum characters stored in Post.text.  Prevents unbounded storage and
+# ensures that template filters (linebreaksbr, truncatewords, etc.) never
+# have to iterate over megabytes of user-supplied content – a core cause of
+# the Uncontrolled Resource Consumption CVEs (CVE-2024-38875, -41989, -41990,
+# -41991, -45230).
+MAX_POST_TEXT_LENGTH: int = 50_000  # ~12 500 words – generous for a blog post
+
+# Characters shown in listing previews before the user clicks "read more".
+MAX_PREVIEW_CHARS: int = 500
 
 
 class TimestampedModel(models.Model):
@@ -158,7 +173,13 @@ class Post(TimestampedModel):
     )
     text = models.TextField(
         'Текст',
-        help_text='Основное содержание поста'
+        help_text='Основное содержание поста',
+        validators=[
+            MaxLengthValidator(
+                MAX_POST_TEXT_LENGTH,
+                message=f'Текст публикации не может превышать {MAX_POST_TEXT_LENGTH:,} символов.'
+            )
+        ]
     )
     slug = models.SlugField(
         'Slug',
@@ -237,9 +258,42 @@ class Post(TimestampedModel):
         return reverse('posts:post_detail', kwargs={'slug': self.slug})
     
     @property
-    def is_published_now(self):
+    def is_published_now(self) -> bool:
         """Проверка, опубликован ли пост на текущий момент."""
         return (
             self.is_published and
             self.pub_date <= timezone.now()
         )
+
+    @property
+    def preview_text(self) -> str:
+        """
+        Возвращает безопасно усечённый фрагмент текста для отображения
+        в списках (индекс, категория).
+
+        Ограничение в MAX_PREVIEW_CHARS символов гарантирует, что шаблонные
+        фильтры, применяемые к этому значению, никогда не обрабатывают
+        произвольно большой ввод — защита от Uncontrolled Resource Consumption.
+        """
+        raw = self.text or ''
+        if len(raw) <= MAX_PREVIEW_CHARS:
+            return raw
+        # Truncate at word boundary to avoid cutting mid-word
+        truncated = raw[:MAX_PREVIEW_CHARS]
+        last_space = truncated.rfind(' ')
+        if last_space > MAX_PREVIEW_CHARS // 2:
+            truncated = truncated[:last_space]
+        return truncated + '…'
+
+    @property
+    def safe_text(self) -> str:
+        """
+        Возвращает текст публикации, усечённый до MAX_POST_TEXT_LENGTH символов.
+
+        Используется на странице детального просмотра вместо прямой передачи
+        Post.text в шаблонные фильтры.  Даже если в БД оказалось значение
+        длиннее лимита (например, записанное напрямую, минуя форму), шаблон
+        никогда не получит неограниченный объём данных.
+        """
+        raw = self.text or ''
+        return raw[:MAX_POST_TEXT_LENGTH]
